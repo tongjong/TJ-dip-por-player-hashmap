@@ -73,7 +73,7 @@ def sha256_hash(key: str, size: int) -> int:
 
 1. All of the above functions are hash functions. Explain how so - what key properties do they all share?
 
-> They are all hash functions because they take an input and produce a value, which is used to map to an index in a hash table. They share 2 key properties: "key" and "size". The "key" is used to produce a unique value for mapping and retrieving data, and the "size" sets the capacity of the hashmap to store data.
+> They are all hash functions because they take an input and produce a value, which is used to map to an index in a hash table. They share 2 key properties: "key" and "size". The "key" is used to produce a value for mapping and retrieving data, and the "size" sets the capacity of the hashmap to store data.
 
 2. What are the advantages and disadvantages of each of the above hash functions? Evaluate in terms of uniformity, determinism, efficiency, collision resistance, sensitivity to input changes, and security[1](#Reference). You may need to do some research to answer this question 😱
 
@@ -81,16 +81,16 @@ def sha256_hash(key: str, size: int) -> int:
 > 
 >2) sum_of_ascii_values(key: str, size: int) -> int: It is deterministic and efficient, as the same inputs always produce the same outputs, and it has O(n) retrieval time. The collision resistance is weak, as different keys can produce the same sum of ascii values. It has some sensitivity, as small input changes alter the output, but it lacks strong security, as it's easy to guess the input due to its simple operations, making it vulnerable to pre-image attacks.
 > 
->3) pearson_hash(key: str, size: int) -> int:  Its determinism and efficiency is same as the ascii function. The collision resistance is weak for small hash sizes. It has good sensitivity, as small input changes produce different outputs. However, it is not cryptographically secure because the operation is simple and predictable, and although it has good sensitivity, collisions are not infeasible.
+>3) pearson_hash(key: str, size: int) -> int:  Its determinism and efficiency is same as the ascii function. The collision resistance is great, especially when producing a hash value of 8 bits compared to 256 bits produced by the sha256_hash.It has good sensitivity, as small input changes produce different outputs. However, it is not cryptographically secure because the operation is simple and predictable, and although it has good sensitivity, collisions are still possible.
 > 
->4) built_in_hash(key: str, size: int) -> int: It is deterministic and efficient, using Python's built-in hash function. Collision resistance is average, as it can still be an issue for certain data types when the hash table size is too small. It has good sensitivity. However, it is not cryptographically secure, as the built-in hash function is designed for speed, not for preventing pre-image attacks or collisions.
+>4) built_in_hash(key: str, size: int) -> int: It is deterministic and very efficient.It has good uniformity for general cases(strings, integers and standard objects), but it may not be as evenly distributed when dealing with certain data types. Collision resistance is average, as it can still be an issue for certain data types. Like pearson_hash, It has good sensitivity. However, it is not cryptographically secure, as the built-in hash function is designed for speed, not for preventing pre-image attacks or collisions.
 > 
->5) sha256_hash(key: str, size: int) -> int: It is deterministic but slower than other hash functions due to its complex calculations. It has great uniformity and strong collision resistance, as unique outputs are expected for different inputs. Sensitivity is high, as a small input change produces a significantly different output. The extremely low collision rate, combined with the difficulty of reverse-engineering the hash makes it highly secure.
+>5) sha256_hash(key: str, size: int) -> int: It is deterministic but slower than other hash functions due to its complex calculations. It has great uniformity and excellent collision resistance. It has a very large output space (256 bits), which makes it highly resistant to collisions. Sensitivity is high, as a small input change produces a significantly different output. The low collision probability, combined with the difficulty of reverse-engineering the hash makes it highly secure.
 
 3. List the three most important attributes (arranged from most to least) in the context of a hash map? Justify your answer.
 
 > Hash Function -> Size -> Collision Resolution
-> The hash function is the most important attribute because the main purpose of the hashmap is to have O(1) retrieval time. When it is well-defined, it ensures data is efficiently mapped with a unique key and values are distributed evenly to minimise collisions.  Size is important also as it affects the performance of the hash table. It needs to be carefully chosen based on the expected data. It needs to be large enough to store data without frequent resizing but also not so large that it wastes memory and reduces efficiency. Finally, collision resolution is essential for handling cases when multiple keys are hashed to the same index. When the hash function and size are optimised, the need for collision resolution is reduced, making it the least important of the three attributes.
+> The hash function is the most important attribute because the main purpose of the hashmap is to have O(1) retrieval time. When it is well-defined, it ensures data is efficiently mapped with a unique key and values are distributed evenly to minimise collisions.  Size is important also as it affects the performance of the hash function. It needs to be carefully chosen based on the expected data. It needs to be large enough to store data without frequent resizing but also not so large that it wastes memory and reduces efficiency. Finally, collision resolution is essential for handling cases when multiple keys are hashed to the same index. When the hash function and size are optimised, the need for collision resolution is reduced, making it the least important of the three attributes.
 
 4. Which of the above hash functions would you choose to implement the requirements of the task? Why?
 
@@ -107,7 +107,8 @@ def sha256_hash(key: str, size: int) -> int:
        for char in key:  (operating in O(n) time-efficiency)
            hash_ = pearson_table[hash_ ^ ord(char)]  (each character results in different hash-sensitivity/collision)
        return hash_ % size 
-
+    
+    We use a fixed range to create consistency and predictability in the output. By defining a set range, the function ensures the hash values are uniformly distributed which helps reducde the chances of collisions. A fixed range also allows the hash to be mapped to a specific size with ease which improves the overall efficiency.
 6. Write pseudocode of how you would store Players in PlayerLists in a hash map.
 
 > Create a hash table:
@@ -146,8 +147,7 @@ def sha256_hash(key: str, size: int) -> int:
 
 2. If you didn't have to use a PlayerList, how would you have changed them implementation of the hash map and why?
 
-> I would replace the PlayerList with dictionaries. It improves the retrieval time from O(n) in the worst case with a linked list to O(1). It gives better performance even when dealing with collisions.
-
+> I would replace the PlayerList with dictionaries. Python's built-in dictionaries use hash tables implemented in C, which enables near-constant time complexity for lookups, insertions, and deletions.  Dictionaries in Python are designed with memory efficiency in mind. They are optimised for efficient memory and computational management, leading to improved performance.
 ## Reference
 
 ### Key Dimensions of Hash Functions
